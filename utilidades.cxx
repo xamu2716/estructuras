@@ -1,6 +1,8 @@
 #include "utilidades.h"
 #include <cctype>
 
+#include <vector> //para cargar archivo .fa
+
 // trim sin size_t ni npos: indices int y for manuales
 string trim(const string& s) {
     if (s.empty()) return "";
@@ -105,3 +107,5 @@ bool esNumero(const string& s) {
     }
     return true;
 }
+
+vector<Secuencia> secuencias; //para cargara rchivo .fa
