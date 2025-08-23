@@ -1,6 +1,8 @@
 #ifndef UTILIDADES_H
 #define UTILIDADES_H
 
+
+#include <vector> // Estructura para almacenar secuencias cargadas
 #include <string>
 using namespace std;
 
@@ -24,5 +26,15 @@ bool endsWith(const string& s, const string& sufijo);
 
 // true si todos los chars son digitos y no esta vacio
 bool esNumero(const string& s);
+
+//para cargar archivo .fa
+struct Secuencia {
+    std::string descripcion;  // texto después de '>'
+    std::string bases;        // secuencia completa concatenada
+    int anchoLinea;           // ancho de línea original
+};
+
+// Variable global para almacenar secuencias cargadas en memoria
+extern vector<Secuencia> secuencias;
 
 #endif
