@@ -2,6 +2,7 @@
 #include "utilidades.h"
 #include "ayuda.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -40,22 +41,87 @@ bool cmdAyuda(const string& resto) {
 bool cmdCargar(const string& resto) {
     int n = countWords(resto);
     if (n != 1) {
-        cout << "Uso: cargar <nombre_archivo>\n";
+        cout << "Uso: cargar nombre_archivo\n";
         return false;
     }
-    cout << "3 secuencias cargadas correctamente desde nombre_archivo .\n";
-    return false;
+
+    string nombreArchivo = trim(resto);
+    ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) {
+        cout << nombreArchivo << " no se encuentra o no puede leerse." << endl;
+        return false;
+    }
+
+    // Limpiar memoria previa
+    secuencias.clear();
+
+    string linea;
+    Secuencia actual;
+    bool leyendoSecuencia = false;
+
+    while (getline(archivo, linea)) {
+        if (linea.empty()) continue;
+
+        if (linea[0] == '>') {
+            if (leyendoSecuencia) {
+                secuencias.push_back(actual);
+                actual = Secuencia();
+            }
+            actual.descripcion = linea.substr(1); // quitar '>'
+            actual.bases.clear();
+            actual.anchoLinea = 0;
+            leyendoSecuencia = true;
+        } else {
+            if (actual.anchoLinea == 0)
+                actual.anchoLinea = (int)linea.size();
+            actual.bases += trim(linea);
+        }
+    }
+    if (leyendoSecuencia) {
+        secuencias.push_back(actual);
+    }
+
+    if (secuencias.empty()) {
+        cout << nombreArchivo << " no contiene ninguna secuencia." << endl;
+    } else if (secuencias.size() == 1) {
+        cout << "1 secuencia cargada correctamente desde " << nombreArchivo << "." << endl;
+    } else {
+        cout << secuencias.size() << " secuencias cargadas correctamente desde " << nombreArchivo << "." << endl;
+    }
+
+    return false; // no termina el programa
 }
 
-bool cmdListar(const string& resto) {
-    if (!trim(resto).empty()) {
+    bool cmdListar(const string& resto) {
+    int n = countWords(resto);
+    if (n != 0) {
         cout << "Uso: listar_secuencias\n";
         return false;
     }
-    cout << "Hay 3 secuencias cargadas en memoria:\n";
-    cout << "Secuencia Full_SEQUENCE contiene 120 bases.\n";
-    cout << "Secuencia Incomplete_sequence contiene al menos 85 bases.\n";
-    return false;
+
+    if (secuencias.empty()) {
+        cout << "No hay secuencias cargadas en memoria." << endl;
+        return false;
+    }
+
+    cout << "Hay " << secuencias.size() << " secuencias cargadas en memoria:" << endl;
+    for (auto &seq : secuencias) {
+        // Verificar si contiene el caracter '-'
+        size_t guiones = seq.bases.find('-');
+        int basesValidas = 0;
+        for (char c : seq.bases) {
+            if (c != '-') basesValidas++;
+        }
+
+        if (guiones == string::npos) {
+            cout << "Secuencia " << seq.descripcion 
+                 << " contiene " << basesValidas << " bases." << endl;
+        } else {
+            cout << "Secuencia " << seq.descripcion 
+                 << " contiene al menos " << basesValidas << " bases." << endl;
+        }
+    }
+    return false; // no termina el programa
 }
 
 bool cmdHistograma(const string& resto) {
