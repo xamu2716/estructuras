@@ -42,13 +42,16 @@ static unsigned int mascaraBase(char c) {
         case 'H': return (1u << 0) | (1u << 1) | (1u << 3) | (1u << 4);           // A or C or T or U
         case 'V': return (1u << 0) | (1u << 1) | (1u << 2);                       // A or C or G
         case 'N': return (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4);// any base
-        case 'X': return (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4);// mask/any
+        case 'X': return 0u; // mascara: no matchea ninguna base
         default:  return 0u; // caracter desconocido: no matchea
     }
 }
 
 // equivalenciaMascaras: devuelve true si dos caracteres comparten al menos una base.
 static bool equivalenciaMascaras(char seqChar, char patChar) {
+    // X literal: solo matchea con X
+    if (seqChar == 'X' || patChar == 'X') return seqChar == patChar;
+    
     unsigned int ms = mascaraBase(seqChar);
     unsigned int mp = mascaraBase(patChar);
 
