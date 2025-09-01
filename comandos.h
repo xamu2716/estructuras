@@ -2,23 +2,18 @@
 #define COMANDOS_H
 
 #include <string>
-using namespace std;
+class Genoma;
 
-// Procesa una linea completa. Retorna true si el programa debe terminar.
-bool procesarLinea(const string& linea);
+bool procesarLinea(const std::string& linea, Genoma& genoma);
 
-// Comandos (reciben la parte "resto" de la linea)
-bool cmdAyuda(const string& resto);
-bool cmdCargar(const string& resto);
-bool cmdListar(const string& resto);
-bool cmdHistograma(const string& resto);
-bool cmdEsSubsec(const string& resto);
-bool cmdEnmascarar(const string& resto);
-bool cmdGuardar(const string& resto);
-bool cmdCodificar(const string& resto);
-bool cmdDecodificar(const string& resto);
-bool cmdRutaMasCorta(const string& resto);
-bool cmdBaseRemota(const string& resto);
+bool cmdAyuda(const std::string& resto);
+bool cmdCargar(const std::string& resto, Genoma& genoma);
+bool cmdListar(const std::string& resto, Genoma& genoma);
+bool cmdHistograma(const std::string& resto, Genoma& genoma);
+bool cmdEsSubsec(const std::string& resto, Genoma& genoma);
+bool cmdEnmascarar(const std::string& resto, Genoma& genoma);
+bool cmdGuardar(const std::string& resto, Genoma& genoma);
+
 bool cmdSalir();
 
 #endif
