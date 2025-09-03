@@ -8,13 +8,13 @@ using namespace std;
 
 
 int main() {
-    Sistema sistema;  // En lugar de Genoma genoma
+    Sistema sistema; 
     string linea;
 
     cout << "$ ";
     while (true) {
         if (!getline(cin, linea)) break;
-        bool debeSalir = procesarLinea(linea, sistema);  // Pasar sistema
+        bool debeSalir = procesarLinea(linea, sistema); 
         if (debeSalir) break;
         cout << "$ ";
     }

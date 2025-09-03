@@ -1,7 +1,6 @@
 #include "utilidades.h"
 #include <sstream>
 
-// Devuelve la primera palabra de una linea
 std::string firstToken(const std::string& linea) {
     std::istringstream iss(linea);
     std::string token;
@@ -9,7 +8,6 @@ std::string firstToken(const std::string& linea) {
     return token;
 }
 
-// Devuelve la linea sin la primera palabra
 std::string restAfterFirst(const std::string& linea) {
     std::istringstream iss(linea);
     std::string token;
@@ -21,8 +19,6 @@ std::string restAfterFirst(const std::string& linea) {
     if (pos != std::string::npos) return resto.substr(pos);
     return "";
 }
-
-// Cuenta cuantas palabras hay en una linea
 int countWords(const std::string& linea) {
     std::istringstream iss(linea);
     std::string token;
