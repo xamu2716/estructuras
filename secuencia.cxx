@@ -1,4 +1,5 @@
 #include "secuencia.h"
+#include <vector>
 
 /*
  * ================================
@@ -20,7 +21,7 @@ static int codeIndex(char c) {
 }
 
 // mascaraBase: convierte una letra a una mascara de bits de posibilidades.
-// Bits: 0:A 1:C 2:G 3:T 4:U 5:gap('-').
+// Bits: 0:A 1:C 2:G 3:T 4:U 5:gap('-'). 6 para X
 // T y U comparten compatibilidad (bits 3 y 4 activos para ambos).
 static unsigned int mascaraBase(char c) {
     switch (c) {
@@ -30,6 +31,7 @@ static unsigned int mascaraBase(char c) {
         case 'T': return (1u << 3) | (1u << 4);
         case 'U': return (1u << 3) | (1u << 4);
         case '-': return 1u << 5;
+        case 'X': return 1u << 6;
 
         case 'R': return (1u << 0) | (1u << 2);                                   // A or G
         case 'Y': return (1u << 1) | (1u << 3) | (1u << 4);                       // C or T or U
@@ -41,16 +43,16 @@ static unsigned int mascaraBase(char c) {
         case 'D': return (1u << 0) | (1u << 2) | (1u << 3) | (1u << 4);           // A or G or T or U
         case 'H': return (1u << 0) | (1u << 1) | (1u << 3) | (1u << 4);           // A or C or T or U
         case 'V': return (1u << 0) | (1u << 1) | (1u << 2);                       // A or C or G
-        case 'N': return (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4);// any base
-        case 'X': return 0u; // mascara: no matchea ninguna base
+        case 'N': return (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3) | (1u << 4);// cualquiera
+
         default:  return 0u; // caracter desconocido: no matchea
     }
 }
 
 // equivalenciaMascaras: devuelve true si dos caracteres comparten al menos una base.
 static bool equivalenciaMascaras(char seqChar, char patChar) {
-    // X literal: solo matchea con X
-    if (seqChar == 'X' || patChar == 'X') return seqChar == patChar;
+    if (seqChar == 'X') return patChar == 'X';
+    if (patChar == 'X') return seqChar == 'X';
     
     unsigned int ms = mascaraBase(seqChar);
     unsigned int mp = mascaraBase(patChar);
@@ -78,7 +80,9 @@ bool Secuencia::esCompleta() const {
 
 int Secuencia::contarBasesValidas() const {
     int cnt = 0;
-    for (char c : bases) if (c != '-') ++cnt;
+    for (char c : bases) {
+        if (c != '-') ++cnt;
+    }
     return cnt;
 }
 
@@ -119,22 +123,30 @@ int Secuencia::enmascararSubsecuencia(const std::string& sub) {
     int m = (int)sub.size();
     if (m > n) return 0;
 
-    int cnt = 0;
+    // PRIMERO: encontrar todas las posiciones sin modificar
+    std::vector<int> startPositions;
     for (int i = 0; i + m <= n; ++i) {
         bool ok = true;
         for (int j = 0; j < m; ++j) {
             char cs = bases[i + j];
             char cp = sub[j];
-            if (!equivalenciaMascaras(cs, cp)) { ok = false; break; }
+            if (!equivalenciaMascaras(cs, cp)) {
+                ok = false;
+                break;
+            }
         }
         if (ok) {
-            for (int j = 0; j < m; ++j) {
-                bases[i + j] = 'X';
-            }
-            ++cnt;
+            startPositions.push_back(i);
         }
     }
-    return cnt;
+    //enmascarar todas las posiciones encontradas
+    for (int start : startPositions) {
+        for (int j = 0; j < m; ++j) {
+            bases[start + j] = 'X';
+        }
+    }
+
+    return (int)startPositions.size();
 }
 
 void Secuencia::escribirFASTA(std::ostream& os) const {

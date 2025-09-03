@@ -27,7 +27,7 @@ bool Genoma::cargarFASTA(const std::string& path) {
                 secuencias.push_back(actual);
                 actual = Secuencia();
             }
-            actual.descripcion = line.substr(1);
+            actual.descripcion = trimBoth(line.substr(1));
             actual.bases.clear();
             actual.anchoLinea = 0;
             leyendo = true;
