@@ -14,9 +14,7 @@ private:
 
 public:
 
-    Sistema();
     Genoma& getGenoma();
-    const Genoma& getGenoma() const;
     void clear();
     bool cargarFASTA(const std::string& path);
     bool guardarFASTA(const std::string& path) const;

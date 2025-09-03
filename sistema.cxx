@@ -2,7 +2,6 @@
 Sistema::Sistema() {}
 
 Genoma& Sistema::getGenoma() { return genoma_; }
-const Genoma& Sistema::getGenoma() const { return genoma_; }
 
 void Sistema::clear() {
     genoma_.clear();
