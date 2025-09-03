@@ -1,24 +1,24 @@
 #include "comandos.h"
 #include "utilidades.h"
 #include "ayuda.h"
-#include "genoma.h"
+#include "sistema.h"
 
 #include <iostream>
 #include <fstream>
 using namespace std;
 
-bool procesarLinea(const string& linea, Genoma& genoma) {
+bool procesarLinea(const string& linea, Sistema& sistema) {
     string cmd = firstToken(linea);
     string resto = restAfterFirst(linea);
     if (cmd.empty()) return false;
 
     if      (cmd == "ayuda")             return cmdAyuda(resto);
-    else if (cmd == "cargar")            return cmdCargar(resto, genoma);
-    else if (cmd == "listar_secuencias") return cmdListar(resto, genoma);
-    else if (cmd == "histograma")        return cmdHistograma(resto, genoma);
-    else if (cmd == "es_subsecuencia")   return cmdEsSubsec(resto, genoma);
-    else if (cmd == "enmascarar")        return cmdEnmascarar(resto, genoma);
-    else if (cmd == "guardar")           return cmdGuardar(resto, genoma);
+    else if (cmd == "cargar")            return cmdCargar(resto, sistema);
+    else if (cmd == "listar_secuencias") return cmdListar(resto, sistema);
+    else if (cmd == "histograma")        return cmdHistograma(resto, sistema);
+    else if (cmd == "es_subsecuencia")   return cmdEsSubsec(resto, sistema);
+    else if (cmd == "enmascarar")        return cmdEnmascarar(resto, sistema);
+    else if (cmd == "guardar")           return cmdGuardar(resto, sistema);
     else if (cmd == "salir")             return cmdSalir();
     else {
         cout << "Comando invalido. Escriba 'ayuda' para ver opciones.\n";
@@ -34,17 +34,17 @@ bool cmdAyuda(const string& resto) {
     return false;
 }
 
-bool cmdCargar(const string& resto, Genoma& genoma) {
+bool cmdCargar(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 1) {
         cout << "Uso: cargar <archivo>\n";
         return false;
     }
     string nombreArchivo = firstToken(resto);
-    if (!genoma.cargarFASTA(nombreArchivo)) {
+    if (!sistema.cargarFASTA(nombreArchivo)) {
         cout << nombreArchivo << " no se encuentra o no puede leerse." << endl;
         return false;
     }
-    int n = genoma.cantidad();
+    int n = sistema.cantidad();
     if (n == 0) {
         cout << nombreArchivo << " no contiene ninguna secuencia." << endl;
     } else if (n == 1) {
@@ -55,19 +55,19 @@ bool cmdCargar(const string& resto, Genoma& genoma) {
     return false;
 }
 
-bool cmdListar(const string& resto, Genoma& genoma) {
+bool cmdListar(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 0) {
         cout << "Uso: listar_secuencias\n";
         return false;
     }
-    int n = genoma.cantidad();
+    int n = sistema.cantidad();
     if (n == 0) {
         cout << "No hay secuencias cargadas en memoria.\n";
         return false;
     }
     cout << "Hay " << n << " secuencias cargadas en memoria:\n";
 
-    const std::vector<Secuencia>& ref = genoma.datos();
+    const std::vector<Secuencia>& ref = sistema.datos();
     for (size_t i = 0; i < ref.size(); ++i) {
         const Secuencia& seq = ref[i];
         int basesValidas = seq.contarBasesValidas();
@@ -80,17 +80,17 @@ bool cmdListar(const string& resto, Genoma& genoma) {
     return false;
 }
 
-bool cmdHistograma(const string& resto, Genoma& genoma) {
+bool cmdHistograma(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 1) {
         cout << "Uso: histograma <descripcion_secuencia>\n";
         return false;
     }
     string nombre = firstToken(resto);
-    if (genoma.cantidad() == 0) {
+    if (sistema.cantidad() == 0) {
         cout << "Secuencia invalida.\n";
         return false;
     }
-    Secuencia* s = genoma.get(nombre);
+    Secuencia* s = sistema.get(nombre);
     if (s == 0) {
         cout << "Secuencia invalida.\n";
         return false;
@@ -105,17 +105,17 @@ bool cmdHistograma(const string& resto, Genoma& genoma) {
     return false;
 }
 
-bool cmdEsSubsec(const string& resto, Genoma& genoma) {
+bool cmdEsSubsec(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 1) {
         cout << "Uso: es_subsecuencia <subsecuencia>\n";
         return false;
     }
-    if (genoma.cantidad() == 0) {
+    if (sistema.cantidad() == 0) {
         cout << "No hay secuencias cargadas en memoria.\n";
         return false;
     }
     string sub = firstToken(resto);
-    int s = genoma.contarSubseqGlobal(sub);
+    int s = sistema.contarSubseqGlobal(sub);
     if (s == 0) {
         cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria.\n";
     } else if (s == 1) {
@@ -126,17 +126,17 @@ bool cmdEsSubsec(const string& resto, Genoma& genoma) {
     return false;
 }
 
-bool cmdEnmascarar(const string& resto, Genoma& genoma) {
+bool cmdEnmascarar(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 1) {
         cout << "Uso: enmascarar <subsecuencia>\n";
         return false;
     }
-    if (genoma.cantidad() == 0) {
+    if (sistema.cantidad() == 0) {
         cout << "No hay secuencias cargadas en memoria.\n";
         return false;
     }
     string sub = firstToken(resto);
-    int s = genoma.enmascararGlobal(sub);
+    int s = sistema.enmascararGlobal(sub);
     if (s == 0) {
         cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria, por tanto no se enmascara nada.\n";
     } else {
@@ -145,17 +145,17 @@ bool cmdEnmascarar(const string& resto, Genoma& genoma) {
     return false;
 }
 
-bool cmdGuardar(const string& resto, Genoma& genoma) {
+bool cmdGuardar(const string& resto, Sistema& sistema) {
     if (countWords(resto) != 1) {
         cout << "Uso: guardar <archivo>\n";
         return false;
     }
-    if (genoma.cantidad() == 0) {
+    if (sistema.cantidad() == 0) {
         cout << "No hay secuencias cargadas en memoria.\n";
         return false;
     }
     string nombre = firstToken(resto);
-    if (!genoma.guardarFASTA(nombre)) {
+    if (!sistema.guardarFASTA(nombre)) {
         cout << "Error guardando en " << nombre << " .\n";
     } else {
         cout << "Las secuencias han sido guardadas en " << nombre << " .\n";

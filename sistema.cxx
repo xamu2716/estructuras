@@ -1,5 +1,5 @@
 #include "sistema.h"
-Sistema::Sistema() {}
+
 
 Genoma& Sistema::getGenoma() { return genoma_; }
 

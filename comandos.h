@@ -3,16 +3,17 @@
 
 #include <string>
 class Genoma;
+class Sistema;
 
-bool procesarLinea(const std::string& linea, Genoma& genoma);
+bool procesarLinea(const std::string& linea, Sistema& sistema);
 
 bool cmdAyuda(const std::string& resto);
-bool cmdCargar(const std::string& resto, Genoma& genoma);
-bool cmdListar(const std::string& resto, Genoma& genoma);
-bool cmdHistograma(const std::string& resto, Genoma& genoma);
-bool cmdEsSubsec(const std::string& resto, Genoma& genoma);
-bool cmdEnmascarar(const std::string& resto, Genoma& genoma);
-bool cmdGuardar(const std::string& resto, Genoma& genoma);
+bool cmdCargar(const std::string& resto, Sistema& sistema);
+bool cmdListar(const std::string& resto, Sistema& sistema);
+bool cmdHistograma(const std::string& resto, Sistema& sistema);
+bool cmdEsSubsec(const std::string& resto, Sistema& sistema);
+bool cmdEnmascarar(const std::string& resto, Sistema& sistema);
+bool cmdGuardar(const std::string& resto, Sistema& sistema);
 
 bool cmdSalir();
 
