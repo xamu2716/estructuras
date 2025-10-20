@@ -1,5 +1,5 @@
 #include "sistema.h"
-
+#include "fabin.h"
 
 Genoma& Sistema::getGenoma() { return genoma_; }
 
@@ -13,6 +13,14 @@ bool Sistema::cargarFASTA(const std::string& path) {
 
 bool Sistema::guardarFASTA(const std::string& path) const {
     return genoma_.guardarFASTA(path);
+}
+
+bool Sistema::codificarFabin(const std::string& path) const {
+    return FabinIO::codificar(genoma_, path);
+}
+
+bool Sistema::decodificarFabin(const std::string& path) {
+    return FabinIO::decodificar(genoma_, path);
 }
 
 int Sistema::cantidad() const {

@@ -26,6 +26,9 @@ public:
 
     int contarSubseqGlobal(const std::string& sub) const;// cuenta en todo el genoma
     int enmascararGlobal(const std::string& sub);// enmascara en todo el genoma
+
+    bool codificarFabin(const std::string& path) const;// codifica en archivo fabin
+    bool decodificarFabin(const std::string& path);// decodifica desde archivo fabin
 };
 
 #endif // SISTEMA_H

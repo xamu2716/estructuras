@@ -19,6 +19,8 @@ bool procesarLinea(const string& linea, Sistema& sistema) {
     else if (cmd == "es_subsecuencia")   return cmdEsSubsec(resto, sistema);
     else if (cmd == "enmascarar")        return cmdEnmascarar(resto, sistema);
     else if (cmd == "guardar")           return cmdGuardar(resto, sistema);
+    else if (cmd == "codificar")         return cmdCodificar(resto, sistema);
+    else if (cmd == "decodificar")       return cmdDecodificar(resto, sistema);
     else if (cmd == "salir")             return cmdSalir();
     else {
         cout << "Comando invalido. Escriba 'ayuda' para ver opciones.\n";
@@ -159,6 +161,38 @@ bool cmdGuardar(const string& resto, Sistema& sistema) {
         cout << "Error guardando en " << nombre << " .\n";
     } else {
         cout << "Las secuencias han sido guardadas en " << nombre << " .\n";
+    }
+    return false;
+}
+
+bool cmdCodificar(const std::string& resto, Sistema& sistema) {
+    if (countWords(resto) != 1) {
+        std::cout << "Uso: codificar <nombre_archivo.fabin>\n";
+        return false;
+    }
+    if (sistema.cantidad() == 0) {
+        std::cout << "No hay secuencias cargadas en memoria.\n";
+        return false;
+    }
+    std::string nombre = firstToken(resto);
+    if (!sistema.codificarFabin(nombre)) {
+        std::cout << "No se pueden guardar las secuencias cargadas en " << nombre << " .\n";
+    } else {
+        std::cout << "Secuencias codificadas y almacenadas en " << nombre << " .\n";
+    }
+    return false;
+}
+
+bool cmdDecodificar(const std::string& resto, Sistema& sistema) {
+    if (countWords(resto) != 1) {
+        std::cout << "Uso: decodificar <nombre_archivo.fabin>\n";
+        return false;
+    }
+    std::string nombre = firstToken(resto);
+    if (!sistema.decodificarFabin(nombre)) {
+        std::cout << "No se pueden cargar las secuencias desde " << nombre << " .\n";
+    } else {
+        std::cout << "Secuencias decodificadas desde " << nombre << " y cargadas en memoria.\n";
     }
     return false;
 }
