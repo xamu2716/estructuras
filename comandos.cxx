@@ -2,10 +2,15 @@
 #include "utilidades.h"
 #include "ayuda.h"
 #include "sistema.h"
+#include "grafo.h"
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
 using namespace std;
+
 
 bool procesarLinea(const string& linea, Sistema& sistema) {
     string cmd = firstToken(linea);
@@ -21,6 +26,8 @@ bool procesarLinea(const string& linea, Sistema& sistema) {
     else if (cmd == "guardar")           return cmdGuardar(resto, sistema);
     else if (cmd == "codificar")         return cmdCodificar(resto, sistema);
     else if (cmd == "decodificar")       return cmdDecodificar(resto, sistema);
+    else if (cmd == "ruta_mas_corta")    return cmdRutaMasCorta(resto, sistema);
+    else if (cmd == "base_remota")       return cmdBaseRemota(resto, sistema);
     else if (cmd == "salir")             return cmdSalir();
     else {
         cout << "Comando invalido. Escriba 'ayuda' para ver opciones.\n";
@@ -194,6 +201,138 @@ bool cmdDecodificar(const std::string& resto, Sistema& sistema) {
     } else {
         std::cout << "Secuencias decodificadas desde " << nombre << " y cargadas en memoria.\n";
     }
+    return false;
+}
+bool cmdRutaMasCorta(const std::string& resto, Sistema& sistema) {
+    istringstream ss(resto);
+    string nombre;
+    int i, j, x, y;
+
+    if (!(ss >> nombre >> i >> j >> x >> y)) {
+        cout << "Uso: ruta_mas_corta <nombre> i j x y\n";
+        return false;
+    }
+
+    Secuencia* s = sistema.get(nombre);
+    if (!s) {
+        cout << "Secuencia no existe.\n";
+        return false;
+    }
+
+    Grafo g(s);
+    int n1 = g.nodoDesdeCoordenadas(i, j);
+    int n2 = g.nodoDesdeCoordenadas(x, y);
+
+    if (n1 < 0 || n2 < 0) {
+        cout << "Coordenadas invalidas.\n";
+        return false;
+    }
+
+    vector<double> dist;
+    vector<int> padre;
+    g.dijkstra(n1, dist, padre);
+
+    if (padre[n2] == -1 && n1 != n2) {
+        cout << "No existe ruta.\n";
+        return false;
+    }
+
+    vector<int> camino;
+    int cur = n2;
+
+    while (cur != -1) {
+        camino.push_back(cur);
+        if (cur == n1) break;
+        cur = padre[cur];
+    }
+
+    std::reverse(camino.begin(), camino.end());
+
+    cout << "Ruta mas corta:\n";
+    for (size_t k = 0; k < camino.size(); k++) {
+        int f, c;
+        g.coordenadasDesdeNodo(camino[k], f, c);
+        char base = s->bases[camino[k]];
+        cout << "(" << f << "," << c << ")[" << base << "]";
+        if (k + 1 < camino.size()) cout << " -> ";
+    }
+    cout << "\nCosto total: " << dist[n2] << "\n";
+
+    return false;
+}
+bool cmdBaseRemota(const std::string& resto, Sistema& sistema) {
+    istringstream ss(resto);
+    string nombre;
+    int i, j;
+
+    if (!(ss >> nombre >> i >> j)) {
+        cout << "Uso: base_remota <nombre> i j\n";
+        return false;
+    }
+
+    Secuencia* s = sistema.get(nombre);
+    if (!s) {
+        cout << "Secuencia no existe.\n";
+        return false;
+    }
+
+    Grafo g(s);
+    int origen = g.nodoDesdeCoordenadas(i, j);
+
+    if (origen < 0) {
+        cout << "Coordenadas invalidas.\n";
+        return false;
+    }
+
+    char buscada = s->bases[origen];
+
+    vector<double> dist;
+    vector<int> padre;
+    g.dijkstra(origen, dist, padre);
+
+    int mejor = -1;
+    double mejorDist = -1.0;
+
+    for (int k = 0; k < (int)s->bases.size(); k++) {
+        if (s->bases[k] != buscada) continue;
+        if (k == origen) continue;
+        if (padre[k] == -1) continue;
+
+        if (dist[k] > mejorDist) {
+            mejorDist = dist[k];
+            mejor = k;
+        }
+    }
+
+    if (mejor == -1) {
+        cout << "No existe otra base igual alcanzable.\n";
+        return false;
+    }
+
+    vector<int> camino;
+    int cur = mejor;
+
+    while (cur != -1) {
+        camino.push_back(cur);
+        if (cur == origen) break;
+        cur = padre[cur];
+    }
+
+    std::reverse(camino.begin(), camino.end());
+
+    int f, c;
+    g.coordenadasDesdeNodo(mejor, f, c);
+
+    cout << "Base remota mas lejana '" << buscada << "': (" << f << "," << c << ")\n";
+    cout << "Ruta:\n";
+
+    for (size_t k = 0; k < camino.size(); k++) {
+        g.coordenadasDesdeNodo(camino[k], f, c);
+        cout << "(" << f << "," << c << ")[" << s->bases[camino[k]] << "]";
+        if (k + 1 < camino.size()) cout << " -> ";
+    }
+    cout << "\nCosto total: " << mejorDist << "\n";
+
     return false;
 }
 

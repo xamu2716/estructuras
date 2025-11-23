@@ -11,7 +11,8 @@ SRC = main.cxx \
       secuencia.cxx \
       nodo_huffman.cxx \
       arbol_huffman.cxx \
-      fabin.cxx
+      fabin.cxx \
+      grafo.cxx
 
 OBJ = $(SRC:.cxx=.o)
 
