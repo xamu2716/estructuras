@@ -3,7 +3,7 @@
 #include <cmath>
 
 //////////////////////////////////////////////////////////////
-//  COLA MINIMA AUXILIAR INTERNA (struct, NO class)
+//  COLA MINIMA AUXILIAR INTERNA 
 //////////////////////////////////////////////////////////////
 
 struct ColaMin {
@@ -76,7 +76,7 @@ struct ColaMin {
 
     void disminuir(int nodo, double nuevo) {
         int idx = pos[nodo];
-        if (idx == -1) return;        // nodo no estaba en heap
+        if (idx == -1) return;        
         if (nuevo >= costos[idx]) return;
 
         costos[idx] = nuevo;
